@@ -1,0 +1,134 @@
+---
+title: "Assignment_3_Regression"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+date: "2023-11-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tinytex)
+```
+
+
+#1)Run the following code in R-studio to create two variables X and Y?
+
+```{r}
+set.seed(2017)
+X=runif(100)*10
+Y=X*4+3.45
+Y=rnorm(100)*0.29*Y+Y
+
+```
+
+#a)Plot Y against X. Include a screenshot of the plot in your submission. Using the File menu you can save the graph as a picture on your computer. Based on the plot do you think we can fit a linear model to explain Y based on X?
+
+```{r}
+plot(X,Y, xlab = "X (units)", ylab = "Y (units)", main = "Plot of Y vs X ", col = "red")
+```
+##There is a positive linear trend between X variables and Y variables.
+
+#b)Construct a simple linear model of Y based on X. Write the equation that explains Y based on X. What is the accuracy of this model?
+
+```{r}
+linearModel <- lm(Y~X)
+linearModel$coefficients
+```
+# c)How the Coefficient of Determination, R 2, of the model above is related to the correlation coefficient of X and Y?
+```{r}
+summary(linearModel)
+```
+
+#2)We will use the ‘mtcars’ dataset for this question. The dataset is already included in your R distribution. The dataset shows some of the characteristics of different cars. The following shows few samples (i.e. the first 6 rows) of the dataset.
+```{r}
+head(mtcars)
+```
+
+#a) James wants to buy a car. He and his friend, Chris, have different opinions about the Horse Power (hp) of cars. James think the weight of a car (wt) can be used to estimate the HorsePower of the car while Chris thinks the fuel consumption expressed in Mile Per Gallon (mpg),is a better estimator of the (hp). Who do you think is right? Construct simple linear models using mtcars data to answer the question.
+```{r}
+linearmodel2 = lm(hp~wt, data = mtcars)
+summary(linearmodel2)
+plot(mtcars$wt,mtcars$hp, xlab = "Weight (wt)", ylab = "Horsepower (hp)", main = "Plot of Weight vs Horsepower", col = "blue")
+```
+
+```{r}
+# Creating a linear model for mpg vs horsepower and displays a plot of the points
+linearModel3 = lm(hp~mpg, data = mtcars)
+summary(linearModel3)
+plot(mtcars$mpg,mtcars$hp, xlab = "Miles per Gallon (mpg)", ylab = "Horsepower (hp)", main = "Plot of Miles Per Gallon vs Horsepower", col = "blue")
+```
+
+#b) Build a model that uses the number of cylinders (cyl) and the mile per gallon (mpg) values of a car to predict the car Horse Power (hp). Using this model, what is the estimated Horse Power of a car with 4 calendar and mpg of 22?
+```{r}
+# Shows which variables are factor or numeric
+str(mtcars)
+# Converting cylinder into a factor
+mtcars$cyl = as.factor(mtcars$cyl)
+str(mtcars)
+```
+
+```{r}
+linearModel4 = lm(hp~cyl+mpg, data = mtcars)
+summary(linearModel4)
+# Predict the estimated horse power of a car with 4 cylinders and 22 mpg
+predict(linearModel4, data.frame(mpg = c(22), cyl = c("4")))
+```
+#With four calendar months and 22 mpg, the estimated horsepower of the car is 98.15%.
+
+#3) Using BostonHousing Dataset
+```{r}
+library(mlbench)
+data(BostonHousing)
+```
+
+#a)Build a model to estimate the median value of owner-occupied homes (medv)based on the following variables: crime crate (crim), proportion of residential land zoned for lots over 25,000 sq.ft (zn), the local pupil-teacher ratio (ptratio) and weather the whether the tractbounds Chas River(chas). Is this an accurate model?
+```{r}
+str(BostonHousing)
+```
+
+```{r}
+# Creating a linear model for median value based on crim, zn, ptratio, and chas.
+linearModel5 = lm(medv~crim+zn+ptratio+chas, data = BostonHousing)
+summary(linearModel5)
+```
+This model's (crim, zn, ptratio, and chas) R2 value is 35.99% of the variance in the median home value. The accuracy of this model is poor, and it might be strengthened by including more variables.
+
+#b)Use the estimated coefficient to answer these questions?
+#I. Imagine two houses that are identical in all aspects but one bounds the Chas River and the other does not. Which one is more expensive and by how much?
+Based on the coefficients, the resulting formula from our model is:-medv = 49.91868 - 0.26018*crim + 0.07073*zn - 1.49367*ptratio + 4.58393*chas1.
+
+Therefore, if the only difference between two houses is that one borders the Chas River, then we focus on the chas variable coefficient. The house that borders the river would be $4,583.93 more than the one that does not.
+4.58393 (coeff of chas) * 1 (value of chas) * 1000 (medv in $1,000 units) = $4,583.93
+Based on the coefficients, the resulting formula from our model is:
+medv = 49.91868 - 0.26018*crim + 0.07073*zn - 1.49367*ptratio + 4.58393*chas1.
+
+Thus, we concentrate on the ptratio variable coefficient if the pupil-teacher ratio is the only distinction between two houses. The dwelling with the lower pupil-teacher ratio number is therefore more costly, as our model's coefficient turns out to be negative. The houses' valuations diverge to the extent that
+
+-1.49367 (coeff of ptratio) * 0.03 (difference between ptratio values) * 1000 (medv in $1,000 units) = $44.81
+
+According to our calculations, the home with the lower student-teacher ratio is therefore $44.81 more expensive.
+
+#c)Which of the variables are statistically important (i.e. related to the house price)? Hint: use the p-values of the coefficients to answer. 
+
+All of the variables—crim, zn, ptratio, and chas—were determined to be statistically significant based on the model built using these data. 
+This is confirmed by the fact that every p-value derived from our model was less than the significance threshold of 0.05.
+
+#d)Use the anova analysis and determine the order of importance of these four variables.
+```{r}
+anova(linearModel5)
+```
+Based on the returned ANOVA values we can determine the order of importance, for these variables;
+
+1. The variable "crim" explains 15.08% of the variability in the model.
+2. Following that the variable "ptratio" accounts for 11.02% of the models variability.
+3. The "zn" variable contributes 8.32% to the models variability.
+4. Lastly we have the "variable, which explains 1.56% of the models variability.
+
+Despite these findings it is important to note that residuals still account for a portion (around 64.01%) of variability within this model. This suggests that there is room for improvement, in terms of accuracy.
+
+
