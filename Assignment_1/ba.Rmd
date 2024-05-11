@@ -1,0 +1,23 @@
+---
+title: "Business analytics"
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-09-11"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+install.packages("ggplot2")
+library(ggplot2)
+ggplot(data=mtcars,aes(x=mpg,y=wt))+geom_point()
+```
+
+
+```{r cars}
+summary(cars)
+```
+
+
